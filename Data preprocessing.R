@@ -634,7 +634,7 @@ write_csv(Norway_ASRT_progress, "/Users/hoangmy/Desktop/thesis workspace/Norway_
 #####################
 ### Stroop Task ###
 
-# Leer los datos (Read the data)
+# Read the data
 path_to_STROOP <-  "C:\\Users/hoangmy/Desktop/thesis workspace"
 Norway_STROOP_1 <- read_excel("/Users/hoangmy/Desktop/thesis workspace/data/Norway data/Session 1/4_STROOP_DGS.xlsx")
 Norway_STROOP_2 <- read_excel("/Users/hoangmy/Desktop/thesis workspace/data/Norway data/Session 1/5_STROOP_STROOP.xlsx")
@@ -1014,7 +1014,7 @@ merged_data <- merged_data %>%
 
 ##########################
 ### Import EEG data for each time window ### 
-### Step 1: Import EEG data and reshape it to long format with Condition and Brain Region ###
+### Import EEG data and reshape it to long format with Condition and Brain Region ###
 
 # Import EEG data for 400-900 ms
 EEGdata_400_900 <- read.csv("/Users/hoangmy/Desktop/thesis workspace/data/EEG data/Fz_400_900.txt", header = TRUE, sep = "")
@@ -1054,36 +1054,36 @@ EEGdata_400_900_long <- EEGdata_400_900_long %>%
 # Check structure to ensure columns are correctly assigned
 str(EEGdata_400_900_long)  # Verify `Condition`, `Voltage`, and `Brain_Region` are present
 
-### Step 2: Merge EEG data with mapping_table to add `home_IDs` ###
+### Merge EEG data with mapping_table to add `home_IDs` ###
 
 # Merge EEG data with mapping_table to get `home_IDs`
-EEG_with_home_IDs <- EEGdata_400_900_long %>%
+EEG_with_home_IDs_400_900 <- EEGdata_400_900_long %>%
   left_join(mapping_table, by = c("File" = "lab_IDs"))
 
 # Verify merge success
-str(EEG_with_home_IDs)  # `home_IDs` should now be present
+str(EEG_with_home_IDs_400_900)  # `home_IDs` should now be present
 
-### Step 3: Prepare EF_data and Merge with EEG Data ###
+### Prepare EF_data and Merge with EEG Data ###
 
 # Example: Select and rename columns for EF data, ensuring `home_IDs` is present
 EF_data <- data %>% 
   select(home_IDs, max_digits_recalled, ASRT_score, difference_reaction_time)
 
 # Merge EEG data (with home_IDs) with EF data
-combined_data <- EF_data %>%
-  left_join(EEG_with_home_IDs, by = "home_IDs")
+combined_data_400_900 <- EF_data %>%
+  left_join(EEG_with_home_IDs_400_900, by = "home_IDs")
 
 # Ensure `Condition`, `Voltage`, `Brain_Region`, and EF scores are in `combined_data`
-str(combined_data)  # Verify all necessary columns are included
+str(combined_data_400_900)  # Verify all necessary columns are included
 
-### Step 4: Filter Combined Data and Plot ###
+### Filter Combined Data and Plot ###
 
 # Filter out rows with NA values in important columns
-combined_data_filtered <- combined_data %>%
+combined_data_400_900_filtered <- combined_data_400_900 %>%
   filter(!is.na(Brain_Region) & !is.na(Voltage) & !is.na(Condition))
 
 # Plot DGS (Working Memory)
-plot_dgs <- ggplot(combined_data_filtered, aes(x = max_digits_recalled, y = Voltage, color = Condition)) +
+plot_dgs_400_900 <- ggplot(combined_data_400_900_filtered, aes(x = max_digits_recalled, y = Voltage, color = Condition)) +
   geom_point() +
   geom_smooth(method = "lm", se = TRUE) +
   facet_wrap(~ Condition) +
@@ -1095,7 +1095,7 @@ plot_dgs <- ggplot(combined_data_filtered, aes(x = max_digits_recalled, y = Volt
   )
 
 # Plot ASRT (Implicit Learning)
-plot_asrt <- ggplot(combined_data_filtered, aes(x = ASRT_score, y = Voltage, color = Condition)) +
+plot_asrt_400_900 <- ggplot(combined_data_400_900_filtered, aes(x = ASRT_score, y = Voltage, color = Condition)) +
   geom_point() +
   geom_smooth(method = "lm", se = TRUE) +
   facet_wrap(~ Condition) +
@@ -1107,7 +1107,7 @@ plot_asrt <- ggplot(combined_data_filtered, aes(x = ASRT_score, y = Voltage, col
   )
 
 # Plot Stroop (Inhibitory Control)
-plot_stroop <- ggplot(combined_data_filtered, aes(x = difference_reaction_time, y = Voltage, color = Condition)) +
+plot_stroop_400_900 <- ggplot(combined_data_400_900_filtered, aes(x = difference_reaction_time, y = Voltage, color = Condition)) +
   geom_point() +
   geom_smooth(method = "lm", se = TRUE) +
   facet_wrap(~ Condition) +
@@ -1120,9 +1120,9 @@ plot_stroop <- ggplot(combined_data_filtered, aes(x = difference_reaction_time, 
 
 # Combine Plots with Shared Y-axis Title
 grid.arrange(
-  plot_dgs,
-  plot_asrt,
-  plot_stroop,
+  plot_dgs_400_900,
+  plot_asrt_400_900,
+  plot_stroop_400_900,
   ncol = 1,
   left = textGrob("EEG Amplitude (µV)", rot = 90, vjust = 1, gp = gpar(fontsize = 12))  # Shared Y-axis title
 )
@@ -1132,7 +1132,7 @@ grid.arrange(
 ##########################
 ### Import EEG Data for 300-600 ms Time Window ###
 
-### Step 1: Import EEG data and reshape it to long format with Condition and Brain Region ###
+### Import EEG data and reshape it to long format with Condition and Brain Region ###
 
 # Import EEG data for 300-600 ms
 EEGdata_300_600 <- read.csv("/Users/hoangmy/Desktop/thesis workspace/data/EEG data/Fz_300_600.txt", header = TRUE, sep = "")
@@ -1172,7 +1172,7 @@ EEGdata_300_600_long <- EEGdata_300_600_long %>%
 # Check structure to ensure columns are correctly assigned
 str(EEGdata_300_600_long)  # Verify `Condition`, `Voltage`, and `Brain_Region` are present
 
-### Step 2: Merge EEG data with mapping_table to add `home_IDs` ###
+### Merge EEG data with mapping_table to add `home_IDs` ###
 
 # Merge EEG data with mapping_table to get `home_IDs`
 EEG_with_home_IDs_300_600 <- EEGdata_300_600_long %>%
@@ -1181,7 +1181,7 @@ EEG_with_home_IDs_300_600 <- EEGdata_300_600_long %>%
 # Verify merge success
 str(EEG_with_home_IDs_300_600)  # `home_IDs` should now be present
 
-### Step 3: Prepare EF_data and Merge with EEG Data ###
+### Prepare EF_data and Merge with EEG Data ###
 
 # Example: Select and rename columns for EF data, ensuring `home_IDs` is present
 EF_data <- data %>%
@@ -1194,7 +1194,7 @@ combined_data_300_600 <- EF_data %>%
 # Ensure `Condition`, `Voltage`, `Brain_Region`, and EF scores are in `combined_data_300_600`
 str(combined_data_300_600)  # Verify all necessary columns are included
 
-### Step 4: Filter Combined Data and Plot ###
+### Filter Combined Data and Plot ###
 
 # Filter out rows with NA values in important columns
 combined_data_300_600_filtered <- combined_data_300_600 %>%
@@ -1248,7 +1248,7 @@ grid.arrange(
 ##########################
 ### Import EEG Data for 200-500 ms Time Window ###
 
-### Step 1: Import EEG data and reshape it to long format with Condition and Brain Region ###
+### Import EEG data and reshape it to long format with Condition and Brain Region ###
 
 # Import EEG data for 200-500 ms
 EEGdata_200_500 <- read.csv("/Users/hoangmy/Desktop/thesis workspace/data/EEG data/Fz_200_500.txt", header = TRUE, sep = "")
@@ -1288,7 +1288,7 @@ EEGdata_200_500_long <- EEGdata_200_500_long %>%
 # Check structure to ensure columns are correctly assigned
 str(EEGdata_200_500_long)  # Verify `Condition`, `Voltage`, and `Brain_Region` are present
 
-### Step 2: Merge EEG data with mapping_table to add `home_IDs` ###
+### Merge EEG data with mapping_table to add `home_IDs` ###
 
 # Merge EEG data with mapping_table to get `home_IDs`
 EEG_with_home_IDs_200_500 <- EEGdata_200_500_long %>%
@@ -1297,7 +1297,7 @@ EEG_with_home_IDs_200_500 <- EEGdata_200_500_long %>%
 # Verify merge success
 str(EEG_with_home_IDs_200_500)  # `home_IDs` should now be present
 
-### Step 3: Prepare EF_data and Merge with EEG Data ###
+### Prepare EF_data and Merge with EEG Data ###
 
 # Example: Select and rename columns for EF data, ensuring `home_IDs` is present
 EF_data <- data %>%
@@ -1310,7 +1310,7 @@ combined_data_200_500 <- EF_data %>%
 # Ensure `Condition`, `Voltage`, `Brain_Region`, and EF scores are in `combined_data_200_500`
 str(combined_data_200_500)  # Verify all necessary columns are included
 
-### Step 4: Filter Combined Data and Plot ###
+### Filter Combined Data and Plot ###
 
 # Filter out rows with NA values in important columns
 combined_data_200_500_filtered <- combined_data_200_500 %>%
@@ -1361,85 +1361,6 @@ grid.arrange(
   left = textGrob("EEG Amplitude (µV)", rot = 90, vjust = 1, gp = gpar(fontsize = 12))  # Shared Y-axis title
 )
 
-
-#### cai ni chua chay#####
-###analyze###
-# Mixed-effects model for P600
-library(lme4)
-model_p600 <- lmer(Voltage ~ Condition * Brain_Region + (1 | File), data = EEG_with_EF_p600)
-summary(model_p600)
-anova(model_p600)
-# Mixed-effects model for N400
-model_n400 <- lmer(Voltage ~ Condition * Brain_Region + (1 | File), data = EEG_with_EF_n400)
-summary(model_n400)
-anova(model_n400)
-
-
-(doan ni can check lai)
-# Load necessary library
-library(ggplot2)
-
-# Plot for DGS (Working Memory) vs. EEG Amplitude with both conditions on the same axes
-plot_dgs_eeg <- ggplot(combined_data_filtered, aes(x = max_digits_recalled, y = Voltage, color = Condition)) +
-  geom_point() +
-  geom_smooth(method = "lm", se = TRUE) +
-  labs(x = "DGS (Working Memory)", y = "EEG Amplitude (µV)", color = "Condition") +
-  theme_minimal()
-
-# Plot for ASRT (Implicit Learning) vs. EEG Amplitude with both conditions on the same axes
-plot_asrt_eeg <- ggplot(combined_data_filtered, aes(x = ASRT_score, y = Voltage, color = Condition)) +
-  geom_point() +
-  geom_smooth(method = "lm", se = TRUE) +
-  labs(x = "ASRT (Implicit Learning)", y = "EEG Amplitude (µV)", color = "Condition") +
-  theme_minimal()
-
-# Plot for Stroop (Inhibitory Control) vs. EEG Amplitude with both conditions on the same axes
-plot_stroop_eeg <- ggplot(combined_data_filtered, aes(x = difference_reaction_time, y = Voltage, color = Condition)) +
-  geom_point() +
-  geom_smooth(method = "lm", se = TRUE) +
-  labs(x = "Stroop (Inhibitory Control)", y = "EEG Amplitude (µV)", color = "Condition") +
-  theme_minimal()
-
-# Arrange the plots vertically for a clean view
-library(gridExtra)
-grid.arrange(plot_dgs_eeg, plot_asrt_eeg, plot_stroop_eeg, ncol = 1)
-
-library(ggplot2)
-library(dplyr)
-
-# Aggregate data to calculate mean and standard error for each EF measure by Condition and Brain Region
-combined_summary <- combined_data_filtered %>%
-  group_by(Condition, Brain_Region) %>%
-  summarize(
-    mean_amplitude = mean(Voltage, na.rm = TRUE),
-    se_amplitude = sd(Voltage, na.rm = TRUE) / sqrt(n()),
-    .groups = 'drop'
-  )
-
-# Define labels for EF measures and map them to a single x-axis
-ef_labels <- c(
-  "DGS" = "DGS (Working Memory)",
-  "ASRT" = "ASRT (Implicit Learning)",
-  "Stroop" = "Stroop (Inhibitory Control)"
-)
-
-# Plot with lines connecting conditions
-ggplot(combined_summary, aes(x = Condition, y = mean_amplitude, group = Brain_Region, color = Brain_Region)) +
-  geom_line(size = 1) +
-  geom_point(size = 3) +
-  geom_errorbar(aes(ymin = mean_amplitude - se_amplitude, ymax = mean_amplitude + se_amplitude), width = 0.2) +
-  scale_x_discrete(labels = c("Grammatical", "Gender Violation")) +
-  labs(
-    x = "Condition",
-    y = "Mean EEG Amplitude (µV)",
-    color = "Brain Region"
-  ) +
-  theme_minimal() +
-  theme(
-    legend.position = "top",
-    legend.title = element_blank()
-  )
-
 ##########################
 ### Analysis: Omnibus Model for 200-500 ms ###
 ##########################
@@ -1469,7 +1390,7 @@ analysis_data_200_500 <- analysis_data_200_500 %>%
   mutate(grammaticality = ifelse(Condition == "Grammatical", "grammatical", "violation"))
 
 # Omnibus model with grammaticality and other predictors
-omnibus_model <- lmer(
+omnibus_model_200_500 <- lmer(
   Voltage ~ grammaticality +
     `Multilingual Language Diversity Score` +
     difference_reaction_time +
@@ -1492,10 +1413,6 @@ summary(omnibus_model)
 # Display the model summary
 summary(omnibus_model)
 
-# Diagnostic plots for the omnibus model
-par(mfrow = c(2, 2))
-plot(omnibus_model)
-
 ##########################
 ### Follow-Up Analyses ###
 ##########################
@@ -1507,33 +1424,54 @@ plot(omnibus_model)
 grammatical_data <- analysis_data_200_500 %>% filter(Condition == "Grammatical")
 gender_violation_data <- analysis_data_200_500 %>% filter(Condition == "Gender Violation")
 
-# Separate models for each condition (e.g., Grammatical, Gender Violation)
+# Scale the predictors
+# Create scaled versions of predictors for grammatical condition
+grammatical_data <- grammatical_data %>%
+  mutate(
+    scaled_multilingual_language_diversity = scale(`Multilingual Language Diversity Score`),
+    scaled_difference_reaction_time = scale(difference_reaction_time),
+    scaled_ASRT_score = scale(ASRT_score),
+    scaled_max_digits_recalled = scale(max_digits_recalled)
+  )
+
+# Create scaled versions of predictors for gender violation condition
+gender_violation_data <- gender_violation_data %>%
+  mutate(
+    scaled_multilingual_language_diversity = scale(`Multilingual Language Diversity Score`),
+    scaled_difference_reaction_time = scale(difference_reaction_time),
+    scaled_ASRT_score = scale(ASRT_score),
+    scaled_max_digits_recalled = scale(max_digits_recalled)
+  )
+
+# Run models with scaled predictors
+# Grammatical Condition
 grammatical_model <- lmer(
-  Voltage ~ multilingual_language_diversity +
-            stroop +
-            ASRT +
-            digit_span +
-            brain_region +
-            multilingual_language_diversity:brain_region +
-            stroop:brain_region +
-            ASRT:brain_region +
-            digit_span:brain_region +
-            (1 | home_IDs),
+  Voltage ~ scaled_multilingual_language_diversity +
+    scaled_difference_reaction_time +
+    scaled_ASRT_score +
+    scaled_max_digits_recalled +
+    Brain_Region +
+    scaled_multilingual_language_diversity:Brain_Region +
+    scaled_difference_reaction_time:Brain_Region +
+    scaled_ASRT_score:Brain_Region +
+    scaled_max_digits_recalled:Brain_Region +
+    (1 | home_IDs),
   data = grammatical_data
 )
 summary(grammatical_model)
 
+# Gender Violation Condition
 gender_violation_model <- lmer(
-  Voltage ~ multilingual_language_diversity +
-            stroop +
-            ASRT +
-            digit_span +
-            brain_region +
-            multilingual_language_diversity:brain_region +
-            stroop:brain_region +
-            ASRT:brain_region +
-            digit_span:brain_region +
-            (1 | home_IDs),
+  Voltage ~ scaled_multilingual_language_diversity +
+    scaled_difference_reaction_time +
+    scaled_ASRT_score +
+    scaled_max_digits_recalled +
+    Brain_Region +
+    scaled_multilingual_language_diversity:Brain_Region +
+    scaled_difference_reaction_time:Brain_Region +
+    scaled_ASRT_score:Brain_Region +
+    scaled_max_digits_recalled:Brain_Region +
+    (1 | home_IDs),
   data = gender_violation_data
 )
 summary(gender_violation_model)
@@ -1541,157 +1479,265 @@ summary(gender_violation_model)
 ##########################
 ### Post-Hoc Pairwise Comparisons ###
 ##########################
+# Pairwise comparisons for grammaticality within brain regions
+pairwise_grammaticality_200_500 <- emmeans(omnibus_model_200_500, pairwise ~ grammaticality | Brain_Region)
+# Print results
+print(pairwise_grammaticality_200_500)
 
-# Perform pairwise comparisons if significant interactions are found
-library(emmeans)
+##########################
+### Analysis: Omnibus Model for 300-600 ms ###
+##########################
 
-# Example: Pairwise comparisons of grammaticality within brain regions
-pairwise_comparisons <- emmeans(omnibus_model, pairwise ~ grammaticality | brain_region)
-print(pairwise_comparisons)
+# Merge combined_LHQ3 with combined_data_300_600_filtered
+combined_data_300_600_filtered <- combined_data_300_600_filtered %>%
+  left_join(combined_LHQ3, by = c("home_IDs" = "Participant ID"))
 
+# Verify the structure
+str(combined_data_300_600_filtered)
 
+# Remove the newline character from the column
+combined_data_300_600_filtered <- combined_data_300_600_filtered %>%
+  rename(`Multilingual Language Diversity Score` = `Multilingual Language Diversity\nScore`)
 
+# Filter the data for analysis
+analysis_data_300_600 <- combined_data_300_600_filtered %>%
+  filter(!is.na(Voltage) & !is.na(Condition) & !is.na(Brain_Region) &
+           !is.na(max_digits_recalled) & !is.na(ASRT_score) &
+           !is.na(difference_reaction_time) & !is.na(`Multilingual Language Diversity Score`))
 
+# Verify the filtered data
+str(analysis_data_300_600)
 
+# Create a grammaticality column
+analysis_data_300_600 <- analysis_data_300_600 %>%
+  mutate(grammaticality = ifelse(Condition == "Grammatical", "grammatical", "violation"))
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-### doan ni chua ###
-########################
-# Research Question 1.b: EEG Sensitivity (Mean Amplitude)
-
-# Plot DGS (Working Memory) vs EEG Sensitivity (Correct Trials)
-plot_dgs_eeg_correct <- ggplot(data, aes(x = max_digits_recalled, y = mean_correct_amplitude)) +
-geom_point() +
-geom_smooth(method = "lm") +
-labs(title = "DGS (Working Memory) vs EEG Sensitivity (Correct Trials)",
-x = "DGS (Working Memory)", y = "Mean Amplitude (Correct Trials)") +
-theme_minimal()
-
-# Plot DGS (Working Memory) vs EEG Sensitivity (Violation Trials)
-plot_dgs_eeg_violation <- ggplot(data, aes(x = max_digits_recalled, y = mean_violation_amplitude)) +
-geom_point() +
-geom_smooth(method = "lm") +
-labs(title = "DGS (Working Memory) vs EEG Sensitivity (Violation Trials)",
-x = "DGS (Working Memory)", y = "Mean Amplitude (Violation Trials)") +
-theme_minimal()
-
-# Plot ASRT (Implicit Learning) vs EEG Sensitivity (Correct Trials)
-plot_asrt_eeg_correct <- ggplot(data, aes(x = ASRT_score, y = mean_correct_amplitude)) +
-geom_point() +
-geom_smooth(method = "lm") +
-labs(title = "ASRT (Implicit Learning) vs EEG Sensitivity (Correct Trials)",
-x = "ASRT (Implicit Learning)", y = "Mean Amplitude (Correct Trials)") +
-theme_minimal()
-
-# Plot ASRT (Implicit Learning) vs EEG Sensitivity (Violation Trials)
-plot_asrt_eeg_violation <- ggplot(data, aes(x = ASRT_score, y = mean_violation_amplitude)) +
-geom_point() +
-geom_smooth(method = "lm") +
-labs(title = "ASRT (Implicit Learning) vs EEG Sensitivity (Violation Trials)",
-x = "ASRT (Implicit Learning)", y = "Mean Amplitude (Violation Trials)") +
-theme_minimal()
-
-# Plot Stroop (Inhibitory Control) vs EEG Sensitivity (Correct Trials)
-plot_stroop_eeg_correct <- ggplot(data, aes(x = difference_reaction_time, y = mean_correct_amplitude)) +
-geom_point() +
-geom_smooth(method = "lm") +
-labs(title = "Stroop (Inhibitory Control) vs EEG Sensitivity (Correct Trials)",
-x = "Stroop (Inhibitory Control)", y = "Mean Amplitude (Correct Trials)") +
-theme_minimal()
-
-# Plot Stroop (Inhibitory Control) vs EEG Sensitivity (Violation Trials)
-plot_stroop_eeg_violation <- ggplot(data, aes(x = difference_reaction_time, y = mean_violation_amplitude)) +
-geom_point() +
-geom_smooth(method = "lm") +
-labs(title = "Stroop (Inhibitory Control) vs EEG Sensitivity (Violation Trials)",
-x = "Stroop (Inhibitory Control)", y = "Mean Amplitude (Violation Trials)") +
-theme_minimal()
-
-# Display all EEG-related plots for Correct and Violation Trials together
-grid.arrange(plot_dgs_eeg_correct, plot_asrt_eeg_correct, plot_stroop_eeg_correct, ncol = 1)
-grid.arrange(plot_dgs_eeg_violation, plot_asrt_eeg_violation, plot_stroop_eeg_violation, ncol = 1)
-
-######################
-### check lai cai ni ###
-# Linear model for grammatical accuracy (Research Question 1.a)
-model_accuracy <- lm(accuracy_percentage_grammatical ~ max_digits_recalled + ASRT_score + difference_reaction_time, data = data)
-summary(model_accuracy)
-
-# Linear model for EEG Sensitivity (Research Question 1.b)
-model_eeg <- lm(Mean.amplitude ~ max_digits_recalled + ASRT_score + difference_reaction_time + Region + Time.window, data = data %>% filter(Time.window %in% time_windows, Region %in% regions))
-summary(model_eeg)
-
-# For Research Question 2: Predictive Power of Executive Functions
-# Extract coefficients and p-values for each predictor from both models
-accuracy_coefficients <- summary(model_accuracy)$coefficients
-eeg_coefficients <- summary(model_eeg)$coefficients
-
-# Display the coefficients to interpret which executive function is more predictive
-print("Grammatical Accuracy Model Coefficients:")
-print(accuracy_coefficients)
-
-
-#################
-### chay nhap ###
-
-# Define the time windows and brain regions
-time_windows <- c("200-500", "300-600", "400-900")
-brain_regions <- c("F3", "F7", "FC1", "FC5", "F4", "F8", "FC2", "FC6", "CP1", "CP5", "CP2", "CP6", "P3", "P7", "P4", "P8", "Fz", "FCz", "Pz")
-
-# Create a new dataset with all combinations of time_window and brain_region
-expanded_data <- expand.grid(
-participant = final_merged_data$home_IDs,  # Assuming home_IDs is the participant identifier
-time_window = time_windows,
-brain_region = brain_regions
+# Omnibus model with grammaticality and other predictors
+omnibus_model_300_600 <- lmer(
+  Voltage ~ grammaticality +
+    `Multilingual Language Diversity Score` +
+    difference_reaction_time +
+    ASRT_score +
+    max_digits_recalled +
+    Brain_Region +
+    grammaticality:`Multilingual Language Diversity Score` +
+    grammaticality:difference_reaction_time +
+    grammaticality:ASRT_score +
+    grammaticality:max_digits_recalled +
+    grammaticality:Brain_Region +
+    (1 | home_IDs),  # Random intercept for participants
+  data = analysis_data_300_600
 )
 
-# Merge with the original dataset on 'home_IDs'
-final_merged_expanded_data <- merge(expanded_data, final_merged_data, by.x = "participant", by.y = "home_IDs")
+# View the model summary
+summary(omnibus_model_300_600)
 
-# Diagnostic step: Check the first few rows after merging to ensure it worked correctly
-head(final_merged_expanded_data)
+##########################
+### Follow-Up Analyses ###
+##########################
 
-# Rescale all numeric variables
-final_merged_expanded_data$accuracy_percentage_grammatical <- scale(final_merged_expanded_data$accuracy_percentage_grammatical)
-final_merged_expanded_data$difference_reaction_time <- scale(final_merged_expanded_data$difference_reaction_time)
-final_merged_expanded_data$ASRT_score <- scale(final_merged_expanded_data$ASRT_score)
-final_merged_expanded_data$max_digits_recalled <- scale(final_merged_expanded_data$max_digits_recalled)
+# Subset data for Grammaticality condition
+grammatical_data_300_600 <- analysis_data_300_600 %>% filter(Condition == "Grammatical")
+gender_violation_data_300_600 <- analysis_data_300_600 %>% filter(Condition == "Gender Violation")
 
-# Use bobyqa optimizer with increased maximum iterations
-control_options <- lmerControl(optimizer = "bobyqa", optCtrl = list(maxfun = 200000))
+# Scale the predictors
+grammatical_data_300_600 <- grammatical_data_300_600 %>%
+  mutate(
+    scaled_multilingual_language_diversity = scale(`Multilingual Language Diversity Score`),
+    scaled_difference_reaction_time = scale(difference_reaction_time),
+    scaled_ASRT_score = scale(ASRT_score),
+    scaled_max_digits_recalled = scale(max_digits_recalled)
+  )
 
-omnibus_behavioral_model <- lmer(
-  accuracy_percentage_grammatical ~ 
-    max_digits_recalled + ASRT_score + difference_reaction_time + 
-    time_window + brain_region +
-    (1 | participant),  # Random effect
-  data = final_merged_expanded_data,
-  control = lmerControl(optimizer = "bobyqa", optCtrl = list(maxfun = 200000))
+gender_violation_data_300_600 <- gender_violation_data_300_600 %>%
+  mutate(
+    scaled_multilingual_language_diversity = scale(`Multilingual Language Diversity Score`),
+    scaled_difference_reaction_time = scale(difference_reaction_time),
+    scaled_ASRT_score = scale(ASRT_score),
+    scaled_max_digits_recalled = scale(max_digits_recalled)
+  )
+
+# Grammatical Condition
+grammatical_model_300_600 <- lmer(
+  Voltage ~ scaled_multilingual_language_diversity +
+    scaled_difference_reaction_time +
+    scaled_ASRT_score +
+    scaled_max_digits_recalled +
+    Brain_Region +
+    scaled_multilingual_language_diversity:Brain_Region +
+    scaled_difference_reaction_time:Brain_Region +
+    scaled_ASRT_score:Brain_Region +
+    scaled_max_digits_recalled:Brain_Region +
+    (1 | home_IDs),
+  data = grammatical_data_300_600
+)
+summary(grammatical_model_300_600)
+
+# Gender Violation Condition
+gender_violation_model_300_600 <- lmer(
+  Voltage ~ scaled_multilingual_language_diversity +
+    scaled_difference_reaction_time +
+    scaled_ASRT_score +
+    scaled_max_digits_recalled +
+    Brain_Region +
+    scaled_multilingual_language_diversity:Brain_Region +
+    scaled_difference_reaction_time:Brain_Region +
+    scaled_ASRT_score:Brain_Region +
+    scaled_max_digits_recalled:Brain_Region +
+    (1 | home_IDs),
+  data = gender_violation_data_300_600
+)
+summary(gender_violation_model_300_600)
+
+##########################
+### Post-Hoc Pairwise Comparisons ###
+##########################
+# Pairwise comparisons for grammaticality within brain regions
+pairwise_grammaticality_300_600 <- emmeans(omnibus_model_300_600, pairwise ~ grammaticality | Brain_Region)
+# Print results
+print(pairwise_grammaticality_300_600)
+
+##########################
+### Analysis: Omnibus Model for 400-900 ms ###
+##########################
+
+# Merge combined_LHQ3 with combined_data_400_900_filtered
+combined_data_400_900_filtered <- combined_data_400_900_filtered %>%
+  left_join(combined_LHQ3, by = c("home_IDs" = "Participant ID"))
+
+# Verify the structure
+str(combined_data_400_900_filtered)
+
+# Remove the newline character from the column
+combined_data_400_900_filtered <- combined_data_400_900_filtered %>%
+  rename(`Multilingual Language Diversity Score` = `Multilingual Language Diversity\nScore`)
+
+# Filter the data for analysis
+analysis_data_400_900 <- combined_data_400_900_filtered %>%
+  filter(!is.na(Voltage) & !is.na(Condition) & !is.na(Brain_Region) &
+           !is.na(max_digits_recalled) & !is.na(ASRT_score) &
+           !is.na(difference_reaction_time) & !is.na(`Multilingual Language Diversity Score`))
+
+# Verify the filtered data
+str(analysis_data_400_900)
+
+# Create a grammaticality column
+analysis_data_400_900 <- analysis_data_400_900 %>%
+  mutate(grammaticality = ifelse(Condition == "Grammatical", "grammatical", "violation"))
+
+# Omnibus model with grammaticality and other predictors
+omnibus_model_400_900 <- lmer(
+  Voltage ~ grammaticality +
+    `Multilingual Language Diversity Score` +
+    difference_reaction_time +
+    ASRT_score +
+    max_digits_recalled +
+    Brain_Region +
+    grammaticality:`Multilingual Language Diversity Score` +
+    grammaticality:difference_reaction_time +
+    grammaticality:ASRT_score +
+    grammaticality:max_digits_recalled +
+    grammaticality:Brain_Region +
+    (1 | home_IDs),  # Random intercept for participants
+  data = analysis_data_400_900
 )
 
-# View summary
-summary(omnibus_behavioral_model)
+# View the model summary
+summary(omnibus_model_400_900)
+
+##########################
+### Follow-Up Analyses ###
+##########################
+
+# Subset data for Grammaticality condition
+grammatical_data_400_900 <- analysis_data_400_900 %>% filter(Condition == "Grammatical")
+gender_violation_data_400_900 <- analysis_data_400_900 %>% filter(Condition == "Gender Violation")
+
+# Scale the predictors
+grammatical_data_400_900 <- grammatical_data_400_900 %>%
+  mutate(
+    scaled_multilingual_language_diversity = scale(`Multilingual Language Diversity Score`),
+    scaled_difference_reaction_time = scale(difference_reaction_time),
+    scaled_ASRT_score = scale(ASRT_score),
+    scaled_max_digits_recalled = scale(max_digits_recalled)
+  )
+
+gender_violation_data_400_900 <- gender_violation_data_400_900 %>%
+  mutate(
+    scaled_multilingual_language_diversity = scale(`Multilingual Language Diversity Score`),
+    scaled_difference_reaction_time = scale(difference_reaction_time),
+    scaled_ASRT_score = scale(ASRT_score),
+    scaled_max_digits_recalled = scale(max_digits_recalled)
+  )
+
+# Grammatical Condition
+grammatical_model_400_900 <- lmer(
+  Voltage ~ scaled_multilingual_language_diversity +
+    scaled_difference_reaction_time +
+    scaled_ASRT_score +
+    scaled_max_digits_recalled +
+    Brain_Region +
+    scaled_multilingual_language_diversity:Brain_Region +
+    scaled_difference_reaction_time:Brain_Region +
+    scaled_ASRT_score:Brain_Region +
+    scaled_max_digits_recalled:Brain_Region +
+    (1 | home_IDs),
+  data = grammatical_data_400_900
+)
+summary(grammatical_model_400_900)
+
+# Gender Violation Condition
+gender_violation_model_400_900 <- lmer(
+  Voltage ~ scaled_multilingual_language_diversity +
+    scaled_difference_reaction_time +
+    scaled_ASRT_score +
+    scaled_max_digits_recalled +
+    Brain_Region +
+    scaled_multilingual_language_diversity:Brain_Region +
+    scaled_difference_reaction_time:Brain_Region +
+    scaled_ASRT_score:Brain_Region +
+    scaled_max_digits_recalled:Brain_Region +
+    (1 | home_IDs),
+  data = gender_violation_data_400_900
+)
+summary(gender_violation_model_400_900)
+
+##########################
+### Post-Hoc Pairwise Comparisons ###
+##########################
+# Pairwise comparisons for grammaticality within brain regions
+pairwise_grammaticality_400_900 <- emmeans(omnibus_model_400_900, pairwise ~ grammaticality | Brain_Region)
+# Print results
+print(pairwise_grammaticality_400_900)
+
+##########################
+### Plot voltage by brain region ###
+# Data for visualization
+emmeans_data <- as.data.frame(pairwise_grammatical$emmeans)
+
+# Plot
+ggplot(emmeans_data, aes(x = Brain_Region, y = emmean)) +
+  geom_point() +
+  geom_errorbar(aes(ymin = lower.CL, ymax = upper.CL), width = 0.2) +
+  labs(
+    title = "Voltage by Brain Region",
+    x = "Brain Region",
+    y = "Estimated Voltage (EMM)"
+  ) +
+  theme_minimal()
 
 
-# View summary of the omnibus model
-summary(omnibus_model)
 
-# View summary of the linear mixed model
-summary(linear_mixed_model)
+
+
+
+
+
+
+
+
+
+
 
 
 
